@@ -2,20 +2,22 @@ Resources:
   StartStopRDSPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: StartStopRDSPolicy
-      Version: "2012-10-17"
-      Statement:
+      ManagedPolicyName: StartStopRDSPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
         - Effect: Allow
           Action:
-            - rds:DescribeDBInstances
-            - rds:StopDBInstance
-            - rds:StartDBInstance
-          Resources: '*'
+          - rds:DescribeDBInstances
+          - rds:StopDBInstance
+          - rds:StartDBInstance
+          Resource: '*'
         - Effect: Allow
           Action:
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
+          - logs:CreateLogGroup
+          - logs:CreateLogStream
+          - logs:PutLogEvents
+          Resource: '*'
 
   StartStopRDsRole:
     Type: AWS::IAM::Role
@@ -26,9 +28,23 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      ManagedPolicyArns: !Ref StartStopRDSPolicy
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns: 
+        - !Ref StartStopRDSPolicy
 
+  StopRDSFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: StopRDSFunction
+      Code:
+        ZipFile: |
+          def handler (event, context):
+            print(event)
+            print('LAMBDA executou com sucesso')
+      Handler: index.handler
+      Runtime: python3.8
+      Role: !GetAtt StartStopRDsRole.Arn
+      Environment:
+        Variables:
+          dbInstanceName : firstDBInstance
