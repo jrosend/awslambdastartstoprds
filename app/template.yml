@@ -1,0 +1,18 @@
+Resources:
+  Type: AWS::IAM::Policy
+  Properties:
+    PolicyName: StartStopRDSPolicy
+    Version: "2012-10-17"
+    Statement:
+      - Effect: Allow
+        Action:
+          - rds:DescribeDBInstances
+          - rds:StopDBInstance
+          - rds:StartDBInstance
+        Resources: '*'
+      - Effect: Allow
+        Action:
+          - logs:CreateLogGroup
+          - logs:CreateLogStream
+          - logs:PutLogEvents
+
