@@ -73,4 +73,22 @@ Resources:
         Variables:
           dbInstanceName : first-rds
 
-#create Cloudwatch event rule
+  StopRDSEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: StopRDSEventRule
+      Description: Rule to stop RDS after commercial hours
+      ScheduleExpression: 'cron(0 21 ? * MON-FRI *)'
+      Targets:
+        - Arn: !GetAtt StopRDSFunction.Arn
+          Id: StopRDSFunction
+
+  StartRDSEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: StartRDSEventRule
+      Description: Rule to start RDS before commercial hours
+      ScheduleExpression: 'cron(0 12 ? * MON-FRI *)'
+      Targets:
+        - Arn: !GetAtt StartRDSFunction.Arn
+          Id: StartRDSFunction
