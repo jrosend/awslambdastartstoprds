@@ -39,12 +39,38 @@ Resources:
       FunctionName: StopRDSFunction
       Code:
         ZipFile: |
+          import os
+          import boto3
           def handler (event, context):
-            print(event)
-            print('LAMBDA executou com sucesso')
+            rds = boto3.client('rds')
+            DBinstance = os.environ['dbInstanceName']
+            response = rds.stop_db_instance(DBInstanceIdentifier=DBinstance)
+            return 'LAMBDA executou com sucesso'
       Handler: index.handler
       Runtime: python3.8
       Role: !GetAtt StartStopRDsRole.Arn
       Environment:
         Variables:
-          dbInstanceName : firstDBInstance
+          dbInstanceName : first-rds
+
+  StartRDSFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: StartRDSFunction
+      Code:
+        ZipFile: |
+          import os
+          import boto3
+          def handler (event, context):
+            rds = boto3.client('rds')
+            DBinstance = os.environ['dbInstanceName']
+            response = rds.start_db_instance(DBInstanceIdentifier=DBinstance)
+            return 'LAMBDA executou com sucesso'
+      Handler: index.handler
+      Runtime: python3.8
+      Role: !GetAtt StartStopRDsRole.Arn
+      Environment:
+        Variables:
+          dbInstanceName : first-rds
+
+#create Cloudwatch event rule
