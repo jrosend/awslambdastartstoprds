@@ -1,18 +1,34 @@
 Resources:
-  Type: AWS::IAM::Policy
-  Properties:
-    PolicyName: StartStopRDSPolicy
-    Version: "2012-10-17"
-    Statement:
-      - Effect: Allow
-        Action:
-          - rds:DescribeDBInstances
-          - rds:StopDBInstance
-          - rds:StartDBInstance
-        Resources: '*'
-      - Effect: Allow
-        Action:
-          - logs:CreateLogGroup
-          - logs:CreateLogStream
-          - logs:PutLogEvents
+  StartStopRDSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyName: StartStopRDSPolicy
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Action:
+            - rds:DescribeDBInstances
+            - rds:StopDBInstance
+            - rds:StartDBInstance
+          Resources: '*'
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+
+  StartStopRDsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: StartStopRDSRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns: !Ref StartStopRDSPolicy
 
